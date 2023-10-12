@@ -1,16 +1,27 @@
-# This is a sample Python script.
+import math
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+res = 0x0
+shift = 1
 
 
-# Press the green button in the gutter to run the script.
+def rc(t):
+    result = 0x1
+
+    for i in range(1, t + 1):
+        result <<= 1
+        if result & 0x100:
+            result ^= 0x71
+
+    return result & 0x1
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    for i in range(24):
+        res = 0x0
+        shift = 1
+        for j in range(7):
+            val = rc(7 * i + j)
+            res |= val << (shift - 1)
+            shift *= 2
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+        print(hex(res))
