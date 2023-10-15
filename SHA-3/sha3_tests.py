@@ -20,11 +20,12 @@ class Tests(unittest.TestCase):
         end_time = time.time()
         expected_time = end_time - start_time
 
-        self.assertEqual(actual, expected)
         print("SHA3-224")
         print(f"\nActual: \nTime: {actual_time}\nResult: {actual}\n")
         print('-' * 100)
         print(f"\nExpected: \nTime: {expected_time}\nResult: {expected}\n")
+
+        self.assertEqual(actual, expected)
 
     def test_sha_256(self):
         input = generate_string(1024 * 1500)
@@ -39,11 +40,12 @@ class Tests(unittest.TestCase):
         end_time = time.time()
         expected_time = end_time - start_time
 
-        self.assertEqual(actual, expected)
         print("SHA3-256")
         print(f"\nActual: \nTime: {actual_time}\nResult: {actual}\n")
         print('-' * 100)
         print(f"\nExpected: \nTime: {expected_time}\nResult: {expected}\n")
+
+        self.assertEqual(actual, expected)
 
     def test_sha_384(self):
         input = generate_string(1024 * 1500)
@@ -58,11 +60,12 @@ class Tests(unittest.TestCase):
         end_time = time.time()
         expected_time = end_time - start_time
 
-        self.assertEqual(actual, expected)
         print("SHA3-384")
         print(f"\nActual: \nTime: {actual_time}\nResult: {actual}\n")
         print('-' * 100)
         print(f"\nExpected: \nTime: {expected_time}\nResult: {expected}\n")
+
+        self.assertEqual(actual, expected)
 
     def test_sha_512(self):
         input = generate_string(1024 * 1500)
@@ -77,11 +80,12 @@ class Tests(unittest.TestCase):
         end_time = time.time()
         expected_time = end_time - start_time
 
-        self.assertEqual(actual, expected)
         print("SHA3-512")
         print(f"\nActual: \nTime: {actual_time}\nResult: {actual}\n")
         print('-' * 100)
         print(f"\nExpected: \nTime: {expected_time}\nResult: {expected}\n")
+
+        self.assertEqual(actual, expected)
 
 
 if __name__ == '__main__':
