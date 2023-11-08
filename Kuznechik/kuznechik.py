@@ -188,21 +188,21 @@ def bytes_to_text(bts):
     without_pad = without_pad >> 8
     while without_pad != 0:
         b = without_pad & 0xff
-        # smth
+        res.insert(0, b)
         without_pad = without_pad >> 8
-    return res
+    return res.decode('utf-8')
 
-
-get_keys(master_key)
-x = get_string_from_file("files/input1.txt")
-x = text_to_bytes(x)
-print("x =", hex(x))
-enc = encrypt(x)
-print("e =", hex(enc))
-dec = decrypt(enc)
-print("d =", hex(dec))
-wp = bytes_to_text(dec)
-print("w =", wp)
+#
+# get_keys(master_key)
+# x = get_string_from_file("files/input1.txt")
+# x = text_to_bytes(x)
+# print("x =", hex(x))
+# enc = encrypt(x)
+# print("e =", hex(enc))
+# dec = decrypt(enc)
+# print("d =", hex(dec))
+# a = bytes_to_text(dec)
+# print("a =", a)
 
 
 # 生き残りタイのか
