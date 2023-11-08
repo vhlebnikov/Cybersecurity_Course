@@ -7,7 +7,7 @@ b = 25 * w
 
 
 def get_bit_array(input, littleEndian=True):
-    b_array = bytearray(input.encode(), )
+    b_array = input
     a = []
     for byte in b_array:
         b = bin(byte)[2:].zfill(8)
