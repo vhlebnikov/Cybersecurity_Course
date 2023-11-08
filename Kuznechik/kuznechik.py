@@ -32,11 +32,11 @@ pi_inv = [165, 45, 50, 143, 14, 48, 56, 192, 84, 230, 158, 57, 85, 126, 82, 145,
           144, 208, 36, 52, 203, 237, 244, 206, 153, 16, 68, 64, 146, 58, 1, 38,
           18, 26, 72, 104, 245, 129, 139, 199, 214, 32, 10, 8, 0, 76, 215, 116]
 
-master_key = int('8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef', 16)
+master_key = int('8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef', 16)  # 32 bytes
 
 l_vec = [1, 148, 32, 133, 16, 194, 192, 1, 251, 1, 192, 194, 16, 133, 32, 148]
-iter_c = []
-iter_keys = []
+iter_c = []  # 16 bytes
+iter_keys = []  # 16 bytes
 
 BLOCK_SIZE = 16
 
@@ -77,7 +77,7 @@ def L_inv(a):
     for i in range(16):
         c = 0  # будущий младший байт
         for j in range(16):
-            c = c ^ mul_polynomial((res >> (8 * j)) & 0xff, l_vec[j])
+            c = c ^ mul_polynomial((res >> (8 * j)) & 0xff, l_vec[(j + 1) % 16])
         res = res << 8
         res = res ^ c
         res = res & ((1 << 128) - 1)
@@ -105,7 +105,7 @@ def get_iter_c():
 def get_keys(key):
     get_iter_c()
     k1 = key >> 128
-    k2 = key & (2 ** 128 - 1)
+    k2 = key & ((1 << 128) - 1)
     iter_keys.append(k1)
     iter_keys.append(k2)
     for i in range(4):
@@ -117,9 +117,92 @@ def get_keys(key):
         iter_keys.append(k2)
 
 
-def encrypt():
-    pass
+def encrypt_block(block):
+    out_block = block
+    for i in range(9):
+        out_block = L(S(X(iter_keys[i], out_block)))
+    out_block = X(iter_keys[9], out_block)
+    return out_block
 
 
-def decrypt():
-    pass
+def encrypt(input):
+    res = 0
+    i = 0
+    while input != 0:
+        block = input & ((1 << 128) - 1)
+        encrypted_block = encrypt_block(block)
+        res = res ^ (encrypted_block << (128 * i))
+        i = i + 1
+        input = input >> 128
+    return res
+
+
+def decrypt_block(block):
+    out_block = block
+    out_block = X(iter_keys[9], out_block)
+    for i in reversed(range(9)):
+        out_block = X(iter_keys[i], S_inv(L_inv(out_block)))
+    return out_block
+
+
+def decrypt(input):
+    res = 0
+    i = 0
+    while input != 0:
+        block = input & ((1 << 128) - 1)
+        decrypted_block = decrypt_block(block)
+        res = res ^ (decrypted_block << (128 * i))
+        i = i + 1
+        input = input >> 128
+    return res
+
+
+def get_string_from_file(filename):
+    file = open(filename, "rb")
+    string = file.read()
+    file.close()
+    return string
+
+
+def text_to_bytes(text):
+    res = 0
+    for byte in text:
+        res = res << 8
+        res = res ^ byte
+    pad_len = 16 - (len(text) % 16)
+    if pad_len:
+        res = res << 8
+        res = res ^ 0x80
+        pad_len = pad_len - 1
+        while pad_len:
+            res = res << 8
+            pad_len = pad_len - 1
+    return res
+
+
+def bytes_to_text(bts):
+    res = bytearray()
+    without_pad = bts
+    while without_pad & 0x80 == 0:
+        without_pad = without_pad >> 8
+    without_pad = without_pad >> 8
+    while without_pad != 0:
+        b = without_pad & 0xff
+        # smth
+        without_pad = without_pad >> 8
+    return res
+
+
+get_keys(master_key)
+x = get_string_from_file("files/input1.txt")
+x = text_to_bytes(x)
+print("x =", hex(x))
+enc = encrypt(x)
+print("e =", hex(enc))
+dec = decrypt(enc)
+print("d =", hex(dec))
+wp = bytes_to_text(dec)
+print("w =", wp)
+
+
+# 生き残りタイのか
