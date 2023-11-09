@@ -32,7 +32,6 @@ pi_inv = [165, 45, 50, 143, 14, 48, 56, 192, 84, 230, 158, 57, 85, 126, 82, 145,
           144, 208, 36, 52, 203, 237, 244, 206, 153, 16, 68, 64, 146, 58, 1, 38,
           18, 26, 72, 104, 245, 129, 139, 199, 214, 32, 10, 8, 0, 76, 215, 116]
 
-master_key = int('8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef', 16)  # 32 bytes
 
 l_vec = [1, 148, 32, 133, 16, 194, 192, 1, 251, 1, 192, 194, 16, 133, 32, 148]
 iter_c = []  # 16 bytes
@@ -191,18 +190,3 @@ def bytes_to_text(bts):
         res.insert(0, b)
         without_pad = without_pad >> 8
     return res.decode('utf-8')
-
-#
-# get_keys(master_key)
-# x = get_string_from_file("files/input1.txt")
-# x = text_to_bytes(x)
-# print("x =", hex(x))
-# enc = encrypt(x)
-# print("e =", hex(enc))
-# dec = decrypt(enc)
-# print("d =", hex(dec))
-# a = bytes_to_text(dec)
-# print("a =", a)
-
-
-# 生き残りタイのか
