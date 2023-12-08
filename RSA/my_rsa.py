@@ -1,4 +1,6 @@
-import math, random
+import math
+import random
+from hashlib import sha256
 
 
 def fast_pow(base, exp, mod):
@@ -85,13 +87,14 @@ def generate_RSA_keys(bit_size):
 
 
 def bytes_to_blocks(input, block_len):
-    return [int.from_bytes(input[i: i + block_len], 'little') for i in range(0, input, block_len)]
+    return [int.from_bytes(input[i: i + block_len], 'little') for i in range(0, len(input), block_len)]
 
 
 def blocks_to_bytes(input):
     array = bytearray()
     for block in input:
         array.extend(block.to_bytes(math.ceil(block.bit_length() / 8), 'little'))
+    return array
 
 
 def crypt(blocks, key):
@@ -113,8 +116,28 @@ def decrypt(input, private_key):
 
     block_len = ((n.bit_length() - 1) // 8) + 1
     blocks = bytes_to_blocks(input, block_len)
-    encrypted = crypt(blocks, private_key)
-    return blocks_to_bytes(encrypted)
+    decrypted = crypt(blocks, private_key)
+    return blocks_to_bytes(decrypted)
 
 
-def hash_file
+def hash_file(file_name):
+    hasher = sha256()
+    file = open(file_name, 'rb')
+    block = file.read(hasher.block_size)
+    while block:
+        hasher.update(block)
+        block = file.read(hasher.block_size)
+    file.close()
+    return hasher.digest()
+
+
+def sign_file(file_name, private_key):
+    return encrypt(hash_file(file_name), private_key)
+
+
+def verify_signature(file_name, signature, public_key):
+    decrypted_signature = decrypt(signature, public_key)
+    file_hash = hash_file(file_name)
+    if decrypted_signature == file_hash:
+        return True
+    return False
