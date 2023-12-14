@@ -3,14 +3,18 @@ import random
 from hashlib import sha256
 
 
-def fast_pow(base, exp, mod):
-    res = 1
-    while exp > 0:
-        if exp % 2 == 1:
-            res = (res * base) % mod
-        base = (base * base) % mod
-        exp = exp // 2
-    return res
+def sieve_of_eratosthenes(limit):
+    primes = []
+    numbers = [True] * (limit + 1)
+    for p in range(2, limit + 1):
+        if numbers[p]:
+            primes.append(p)
+            for i in range(p * p, limit + 1, p):
+                numbers[i] = False
+    return primes
+
+
+low_primes = sieve_of_eratosthenes(10000)
 
 
 def extended_gcd(a, b):
@@ -33,6 +37,10 @@ def rabin_miller_test(n, k=0):
     if n <= 3:
         return True
 
+    for p in low_primes:
+        if n % p == 0:
+            return False
+
     s = 0
     t = n - 1
     while t % 2 == 0:
@@ -41,11 +49,11 @@ def rabin_miller_test(n, k=0):
 
     for _ in range(k):
         a = random.randrange(2, n - 2)
-        x = fast_pow(a, t, n)
+        x = pow(a, t, n)
         if x == 1 or x == n - 1:
             continue
         for _ in range(s - 1):
-            x = fast_pow(x, 2, n)
+            x = pow(x, 2, n)
             if x == 1:
                 return False
             if x == n - 1:
@@ -58,7 +66,9 @@ def rabin_miller_test(n, k=0):
 def generate_prime(bit_size):
     while True:
         probable_prime = random.getrandbits(bit_size)
-        probable_prime = probable_prime | (1 << (bit_size - 1)) | 1
+        bits_to_set = random.randint(1, 7)
+        # 111 110 101 100 011 010 001
+        probable_prime = probable_prime | (bits_to_set << (bit_size - 3)) | 1
         if rabin_miller_test(probable_prime):
             return probable_prime
 
@@ -99,7 +109,7 @@ def blocks_to_bytes(input):
 
 def crypt(blocks, key):
     x, n = key
-    return [fast_pow(block, x, n) for block in blocks]
+    return [pow(block, x, n) for block in blocks]
 
 
 def encrypt(input, public_key):
